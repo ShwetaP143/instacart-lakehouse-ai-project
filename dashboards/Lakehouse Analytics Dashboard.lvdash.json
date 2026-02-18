@@ -1,0 +1,817 @@
+{
+  "datasets": [
+    {
+      "name": "a422ca3d",
+      "displayName": "dim_products",
+      "queryLines": [
+        "SELECT * FROM main.instacart_gold.dim_products"
+      ],
+      "catalog": "workspace",
+      "schema": "default"
+    },
+    {
+      "name": "0c4da37e",
+      "displayName": "fact_order_items",
+      "queryLines": [
+        "SELECT * FROM main.instacart_gold.fact_order_items"
+      ],
+      "catalog": "workspace",
+      "schema": "default"
+    },
+    {
+      "name": "503c71e1",
+      "displayName": "kpi_reorder_rate",
+      "queryLines": [
+        "SELECT * FROM main.instacart_gold.kpi_reorder_rate"
+      ]
+    },
+    {
+      "name": "0fc53d85",
+      "displayName": "kpi_top_products",
+      "queryLines": [
+        "SELECT * FROM main.instacart_gold.kpi_top_products;"
+      ],
+      "catalog": "workspace",
+      "schema": "default"
+    },
+    {
+      "name": "e2b16ac0",
+      "displayName": "Top Ten Most Ordered Products Summary Dataset",
+      "queryLines": [
+        "SELECT \r\n",
+        "  product_name,\r\n",
+        "  COUNT(*) AS total_orders\r\n",
+        "FROM main.instacart_gold.fact_order_items f\r\n",
+        "JOIN main.instacart_gold.dim_products p\r\n",
+        "ON f.product_id = p.product_id\r\n",
+        "GROUP BY product_name\r\n",
+        "ORDER BY total_orders DESC\r\n",
+        "LIMIT 10;"
+      ]
+    },
+    {
+      "name": "8de8549e",
+      "displayName": "Instacart Order Reorder Rate Analysis Summary",
+      "queryLines": [
+        "SELECT \r\n",
+        "  ROUND(AVG(CAST(reordered AS DOUBLE)) * 100, 2) AS reorder_rate_percentage\r\n",
+        "FROM main.instacart_gold.fact_order_items;\r\n"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "92b2b356",
+      "displayName": "Untitled page",
+      "layout": [
+        {
+          "widget": {
+            "name": "ed646801",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "503c71e1",
+                  "fields": [
+                    {
+                      "name": "department",
+                      "expression": "`department`"
+                    },
+                    {
+                      "name": "avg(reorder_rate)",
+                      "expression": "AVG(`reorder_rate`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Reorder avg Rate by Department",
+                "showTitle": true,
+                "showDescription": false
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "department",
+                  "displayName": "Department",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "natural-order"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(reorder_rate)",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 2
+                    }
+                  },
+                  "displayName": "Reorder Rate",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "department",
+                  "legend": {
+                    "position": "right"
+                  },
+                  "displayName": "Department",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 10,
+            "width": 7,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "1cb688f5",
+            "queries": [
+              {
+                "name": "dashboards/01f10c9bdfd91cb9906180e2ff3fca8d/datasets/01f10c9c0a7d181fb0f4e93f1e83feba_order_hour_of_day",
+                "query": {
+                  "datasetName": "0c4da37e",
+                  "fields": [
+                    {
+                      "name": "order_hour_of_day",
+                      "expression": "`order_hour_of_day`"
+                    },
+                    {
+                      "name": "order_hour_of_day_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "order_hour_of_day",
+                    "queryName": "dashboards/01f10c9bdfd91cb9906180e2ff3fca8d/datasets/01f10c9c0a7d181fb0f4e93f1e83feba_order_hour_of_day"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 7,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "5537c0b1",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "e2b16ac0",
+                  "fields": [
+                    {
+                      "name": "product_name",
+                      "expression": "`product_name`"
+                    },
+                    {
+                      "name": "total_orders",
+                      "expression": "`total_orders`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top Ten Most Ordered Products",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "product_name",
+                  "displayName": "Product Name",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "total_orders",
+                  "format": {
+                    "type": "number-plain",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 0
+                    },
+                    "abbreviation": "compact"
+                  },
+                  "displayName": "Total Orders",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "product_name",
+                  "legend": {
+                    "position": "right"
+                  },
+                  "displayName": "Product Name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "a94b143f",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "503c71e1",
+                  "fields": [
+                    {
+                      "name": "department",
+                      "expression": "`department`"
+                    },
+                    {
+                      "name": "aisle",
+                      "expression": "`aisle`"
+                    },
+                    {
+                      "name": "reorder_rate",
+                      "expression": "`reorder_rate`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Reorder Rates by Aisle within Top Departments",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "aisle",
+                  "displayName": "Aisle",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "natural-order"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "reorder_rate",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 2
+                    }
+                  },
+                  "displayName": "Reorder Rate",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "department",
+                  "legend": {
+                    "position": "right"
+                  },
+                  "displayName": "Department",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 5,
+            "y": 3,
+            "width": 7,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "fd6c0079",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0fc53d85",
+                  "fields": [
+                    {
+                      "name": "department",
+                      "expression": "`department`"
+                    },
+                    {
+                      "name": "total_orders",
+                      "expression": "`total_orders`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Total Orders by Department",
+                "showTitle": true
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "department",
+                  "displayName": "Department",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "total_orders",
+                  "format": {
+                    "type": "number-plain",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 0
+                    },
+                    "abbreviation": "compact"
+                  },
+                  "axis": {
+                    "hideGrid": true
+                  },
+                  "displayName": "Total Orders",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 7,
+            "y": 9,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "a7776964",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "503c71e1",
+                  "fields": [
+                    {
+                      "name": "aisle",
+                      "expression": "`aisle`"
+                    },
+                    {
+                      "name": "reorder_rate",
+                      "expression": "`reorder_rate`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top Aisles by Reorder Rate",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "aisle",
+                  "displayName": "Aisle",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "reorder_rate",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 2
+                    }
+                  },
+                  "displayName": "Reorder Rate",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "aisle",
+                  "legend": {
+                    "position": "right"
+                  },
+                  "displayName": "Aisle",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 15,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "76f449ba",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "8de8549e",
+                  "fields": [
+                    {
+                      "name": "reorder_rate_percentage",
+                      "expression": "`reorder_rate_percentage`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Overall Reorder Rate (%)",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "reorder_rate_percentage",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 2
+                    }
+                  },
+                  "displayName": "Overall Reorder Rate (%)"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 4,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "departeent",
+            "queries": [
+              {
+                "name": "dashboards/01f10c9bdfd91cb9906180e2ff3fca8d/datasets/01f10c9c09311f6e87e74176c5548fb3_department",
+                "query": {
+                  "datasetName": "a422ca3d",
+                  "fields": [
+                    {
+                      "name": "department",
+                      "expression": "`department`"
+                    },
+                    {
+                      "name": "department_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Departeent"
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "department",
+                    "queryName": "dashboards/01f10c9bdfd91cb9906180e2ff3fca8d/datasets/01f10c9c09311f6e87e74176c5548fb3_department"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 1,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "cb279753",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# <span style=\"text-align:center;display:block\"><span style=\"font-family: Times New Roman;color: #FFAB00;\">**Lakehouse Analytics Dashboard**</span></span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "purchase-time-hour-of-day",
+            "queries": [
+              {
+                "name": "dashboards/01f10c9bdfd91cb9906180e2ff3fca8d/datasets/01f10c9c0a7d181fb0f4e93f1e83feba_order_hour_of_day",
+                "query": {
+                  "datasetName": "0c4da37e",
+                  "fields": [
+                    {
+                      "name": "min(order_hour_of_day)",
+                      "expression": "MIN(`order_hour_of_day`)"
+                    },
+                    {
+                      "name": "max(order_hour_of_day)",
+                      "expression": "MAX(`order_hour_of_day`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Purchase Time (Hour of Day)"
+              },
+              "widgetType": "range-slider",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "order_hour_of_day",
+                    "queryName": "dashboards/01f10c9bdfd91cb9906180e2ff3fca8d/datasets/01f10c9c0a7d181fb0f4e93f1e83feba_order_hour_of_day"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 2,
+            "width": 8,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "aisle",
+            "queries": [
+              {
+                "name": "dashboards/01f10c9bdfd91cb9906180e2ff3fca8d/datasets/01f10c9c0d511252bfe1a3914e9f96c9_aisle",
+                "query": {
+                  "datasetName": "503c71e1",
+                  "fields": [
+                    {
+                      "name": "aisle",
+                      "expression": "`aisle`"
+                    },
+                    {
+                      "name": "aisle_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Aisle"
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "aisle",
+                    "queryName": "dashboards/01f10c9bdfd91cb9906180e2ff3fca8d/datasets/01f10c9c0d511252bfe1a3914e9f96c9_aisle"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 1,
+            "width": 4,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "global_filters",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "aisle_filter",
+            "queries": [
+              {
+                "name": "dashboards/01f10c9bdfd91cb9906180e2ff3fca8d/datasets/01f10c9c0d511252bfe1a3914e9f96c9_aisle",
+                "query": {
+                  "datasetName": "503c71e1",
+                  "fields": [
+                    {
+                      "name": "aisle",
+                      "expression": "`aisle`"
+                    },
+                    {
+                      "name": "aisle_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Aisle Filter",
+                "showTitle": true
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "aisle",
+                    "queryName": "dashboards/01f10c9bdfd91cb9906180e2ff3fca8d/datasets/01f10c9c0d511252bfe1a3914e9f96c9_aisle"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "canvasBackgroundColor": {
+        "light": "#FAFAFB",
+        "dark": "#1F272D"
+      },
+      "widgetBackgroundColor": {
+        "light": "#FFFFFF",
+        "dark": "#11171C"
+      },
+      "fontColor": {
+        "light": "#11171C",
+        "dark": "#E8ECF0"
+      },
+      "selectionColor": {
+        "light": "#2272B4",
+        "dark": "#8ACAFF"
+      },
+      "widgetHeaderAlignment": "LEFT"
+    },
+    "applyModeEnabled": false
+  }
+}
